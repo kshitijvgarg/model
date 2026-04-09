@@ -74,21 +74,20 @@ public class EligibilityPanel extends JPanel {
 
         checkSingleBtn = new JButton("Check Selected");
         checkAllBtn = new JButton("Check All Scholarships for Student");
-        JButton refreshBtn = new JButton("Refresh Lists");
         JButton clearBtn = new JButton("Clear Results");
 
         checkSingleBtn.addActionListener(e -> checkSingleEligibility());
         checkAllBtn.addActionListener(e -> checkAllScholarships());
-
-        // ✅ FIX: proper refresh
-        refreshBtn.addActionListener(e -> loadData());
-
         clearBtn.addActionListener(e -> resultArea.setText(""));
 
         buttonPanel.add(checkSingleBtn);
         buttonPanel.add(checkAllBtn);
-        buttonPanel.add(refreshBtn);
         buttonPanel.add(clearBtn);
+
+        // Auto-refresh dropdowns when this panel becomes visible
+        addHierarchyListener(e -> {
+            if (isShowing()) loadData();
+        });
 
         add(buttonPanel, BorderLayout.SOUTH);
     }

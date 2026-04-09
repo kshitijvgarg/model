@@ -127,19 +127,16 @@ public class StudentPanel extends JPanel {
         JButton updateBtn = new JButton("Update");
         JButton deleteBtn = new JButton("Delete");
         JButton clearBtn = new JButton("Clear Form");
-        JButton refreshBtn = new JButton("Refresh");
 
         addBtn.addActionListener(e -> addStudent());
         updateBtn.addActionListener(e -> updateStudent());
         deleteBtn.addActionListener(e -> deleteStudent());
         clearBtn.addActionListener(e -> clearForm());
-        refreshBtn.addActionListener(e -> loadStudents());
 
         panel.add(addBtn);
         panel.add(updateBtn);
         panel.add(deleteBtn);
         panel.add(clearBtn);
-        panel.add(refreshBtn);
 
         return panel;
     }

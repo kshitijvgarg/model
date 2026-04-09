@@ -84,31 +84,22 @@ public class ScholarshipDAO {
     }
 
     public List<Scholarship> findAllActive() throws SQLException {
+        List<Scholarship> list = new ArrayList<>();
+        String sql = "SELECT * FROM scholarships";
 
-    List<Scholarship> list = new ArrayList<>();
-    String sql = "SELECT * FROM scholarships";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-    try (Connection conn = DatabaseConnection.getConnection();
-         Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery(sql)) {
-
-        while (rs.next()) {
-
-            Scholarship s = new Scholarship(
-                rs.getString("name"),
-                rs.getDouble("amount"),
-                rs.getString("provider")
-            );
-
-            s.setId(rs.getInt("id"));
-            s.setDescription(rs.getString("description"));
-
-            list.add(s);
+            while (rs.next()) {
+                Scholarship s = mapResultSetToScholarship(rs);
+                s.setRules(findRulesByScholarshipId(s.getId()));
+                list.add(s);
+            }
         }
-    }
 
-    return list;
-}
+        return list;
+    }
 
     public List<EligibilityRule> findRulesByScholarshipId(int scholarshipId) throws SQLException {
         List<EligibilityRule> rules = new ArrayList<>();
@@ -126,6 +117,53 @@ public class ScholarshipDAO {
             }
         }
         return rules;
+    }
+
+    public void update(Scholarship scholarship) throws SQLException {
+        String sql = """
+            UPDATE scholarships SET name = ?, description = ?, amount = ?, provider = ?
+            WHERE id = ?
+            """;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, scholarship.getName());
+            pstmt.setString(2, scholarship.getDescription());
+            pstmt.setDouble(3, scholarship.getAmount());
+            pstmt.setString(4, scholarship.getProvider());
+            pstmt.setInt(5, scholarship.getId());
+            pstmt.executeUpdate();
+        }
+
+        // Replace rules: delete old, insert new
+        String deleteRules = "DELETE FROM eligibility_rules WHERE scholarship_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(deleteRules)) {
+            pstmt.setInt(1, scholarship.getId());
+            pstmt.executeUpdate();
+        }
+
+        for (EligibilityRule rule : scholarship.getRules()) {
+            rule.setScholarshipId(scholarship.getId());
+            insertRule(rule);
+        }
+    }
+
+    public void delete(int id) throws SQLException {
+        // Delete rules first (foreign key)
+        String deleteRules = "DELETE FROM eligibility_rules WHERE scholarship_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(deleteRules)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        }
+
+        String sql = "DELETE FROM scholarships WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        }
     }
 
     private Scholarship mapResultSetToScholarship(ResultSet rs) throws SQLException {

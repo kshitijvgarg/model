@@ -81,33 +81,24 @@ public class StudentDAO {
     }
 
     public List<Student> findAllActive() throws SQLException {
+        List<Student> list = new ArrayList<>();
+        String sql = "SELECT * FROM students";
 
-    List<Student> list = new ArrayList<>();
-    String sql = "SELECT * FROM students";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-    try (Connection conn = DatabaseConnection.getConnection();
-         Statement stmt = conn.createStatement();
-         ResultSet rs = stmt.executeQuery(sql)) {
-
-        while (rs.next()) {
-            Student s = new Student(
-                rs.getString("name"),
-                rs.getString("roll_number"),
-                rs.getDouble("cgpa"),
-                rs.getDouble("family_income"),
-                rs.getString("category"),
-                rs.getInt("attendance_percent")
-            );
-            list.add(s);
+            while (rs.next()) {
+                list.add(mapResultSetToStudent(rs));
+            }
         }
-    }
 
-    return list;
-}
+        return list;
+    }
 
     public void update(Student student) throws SQLException {
         String sql = """
-            UPDATE students SET name = ?, email = ?, cgpa = ?, family_income = ?,
+            UPDATE students SET name = ?, roll_number = ?, email = ?, cgpa = ?, family_income = ?,
                 category = ?, attendance_percent = ?, backlog_count = ?,
                 date_of_birth = ?, gender = ?, is_disabled = ?, state = ?,
                 current_semester = ?
@@ -118,19 +109,20 @@ public class StudentDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, student.getName());
-            pstmt.setString(2, student.getEmail());
-            pstmt.setDouble(3, student.getCgpa());
-            pstmt.setDouble(4, student.getFamilyIncome());
-            pstmt.setString(5, student.getCategory());
-            pstmt.setDouble(6, student.getAttendancePercent());
-            pstmt.setInt(7, student.getBacklogCount());
-            pstmt.setString(8, student.getDateOfBirth() != null ? 
+            pstmt.setString(2, student.getRollNumber());
+            pstmt.setString(3, student.getEmail());
+            pstmt.setDouble(4, student.getCgpa());
+            pstmt.setDouble(5, student.getFamilyIncome());
+            pstmt.setString(6, student.getCategory());
+            pstmt.setDouble(7, student.getAttendancePercent());
+            pstmt.setInt(8, student.getBacklogCount());
+            pstmt.setString(9, student.getDateOfBirth() != null ?
                 student.getDateOfBirth().toString() : null);
-            pstmt.setString(9, student.getGender());
-            pstmt.setInt(10, student.isDisabled() ? 1 : 0);
-            pstmt.setString(11, student.getState());
-            pstmt.setInt(12, student.getCurrentSemester());
-            pstmt.setInt(13, student.getId());
+            pstmt.setString(10, student.getGender());
+            pstmt.setInt(11, student.isDisabled() ? 1 : 0);
+            pstmt.setString(12, student.getState());
+            pstmt.setInt(13, student.getCurrentSemester());
+            pstmt.setInt(14, student.getId());
 
             pstmt.executeUpdate();
         }

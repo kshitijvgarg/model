@@ -14,11 +14,6 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         initializeUI();
-         try {
-        com.scholarship.util.SampleDataInitializer.initializeSampleData();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
     }
 
     private void initializeUI() {
@@ -27,8 +22,13 @@ public class MainFrame extends JFrame {
         setSize(1200, 800);
         setLocationRelativeTo(null);
 
-        // Initialize database
+        // Initialize database and seed sample data BEFORE creating panels
         DatabaseConnection.initializeDatabase();
+        try {
+            com.scholarship.util.SampleDataInitializer.initializeSampleData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Create tabbed pane
         tabbedPane = new JTabbedPane();
@@ -38,10 +38,10 @@ public class MainFrame extends JFrame {
         eligibilityPanel = new EligibilityPanel();
         reportPanel = new ReportPanel();
 
-        tabbedPane.addTab("👤 Students", studentPanel);
-        tabbedPane.addTab("🎓 Scholarships", scholarshipPanel);
-        tabbedPane.addTab("✓ Check Eligibility", eligibilityPanel);
-        tabbedPane.addTab("📊 Reports", reportPanel);
+        tabbedPane.addTab("Students", studentPanel);
+        tabbedPane.addTab("Scholarships", scholarshipPanel);
+        tabbedPane.addTab("Check Eligibility", eligibilityPanel);
+        tabbedPane.addTab("Reports", reportPanel);
 
         add(tabbedPane, BorderLayout.CENTER);
 
