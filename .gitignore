@@ -1,0 +1,72 @@
+# --- Java build outputs ---------------------------------------------------
+*.class
+*.jar.bak
+hs_err_pid*.log
+replay_pid*.log
+
+# Common Java build directories (in case a build tool is added later)
+bin/
+build/
+out/
+target/
+.gradle/
+
+# --- IDE / editor files ---------------------------------------------------
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated/
+
+# VS Code
+.vscode/
+
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Vim / Emacs swap & backup files
+*~
+*.swp
+*.swo
+\#*\#
+.\#*
+
+# --- SQLite transient files -----------------------------------------------
+# Journal / shared-memory / write-ahead-log files created during open writes.
+# `scholarship.db` itself IS committed — these siblings are transient.
+*.db-journal
+*.db-shm
+*.db-wal
+
+# --- OS-generated --------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# --- Logs ----------------------------------------------------------------
+*.log
+logs/
